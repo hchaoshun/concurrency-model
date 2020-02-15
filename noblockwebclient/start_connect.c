@@ -1,24 +1,31 @@
 #include	"web.h"
 
 void
-home_page(const char *host, const char *fname)
+start_connect(struct file *fptr)
 {
-	int		fd, n;
-	char	line[MAXLINE];
+	int				fd, flags, n;
+	struct addrinfo	*ai;
 
-	fd = Tcp_connect(host, SERV);	/* blocking connect() */
+	ai = Host_serv(fptr->f_host, SERV, 0, SOCK_STREAM);
 
-	n = snprintf(line, sizeof(line), GET_CMD, fname);
-	Writen(fd, line, n);
+	fd = Socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
+	fptr->f_fd = fd;
+	printf("start_connect for %s, fd %d\n", fptr->f_name, fd);
 
-	for ( ; ; ) {
-		if ( (n = Read(fd, line, MAXLINE)) == 0)
-			break;		/* server closed connection */
+	/* 4Set socket nonblocking */
+	flags = Fcntl(fd, F_GETFL, 0);
+	Fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 
-		printf("read %d bytes of home page\n", n);
-		/* do whatever with data */
-	}
-	printf("end-of-file on home page\n");
-	Close(fd);
+	/* 4Initiate nonblocking connect to the server. */
+	if ( (n = connect(fd, ai->ai_addr, ai->ai_addrlen)) < 0) {
+		if (errno != EINPROGRESS)
+			err_sys("nonblocking connect error");
+		fptr->f_flags = F_CONNECTING;
+		FD_SET(fd, &rset);			/* select for reading and writing */
+		FD_SET(fd, &wset);
+		if (fd > maxfd)
+			maxfd = fd;
+
+	} else if (n >= 0)				/* connect is already done */
+		write_get_cmd(fptr);	/* write() the GET command */
 }
-
