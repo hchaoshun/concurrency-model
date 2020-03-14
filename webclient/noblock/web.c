@@ -30,6 +30,7 @@ main(int argc, char **argv)
 /* end web1 */
 /* include web2 */
 	while (nlefttoread > 0) {
+		//控制nconn < maxnconn来控制并发
 		while (nconn < maxnconn && nlefttoconn > 0) {
 				/* 4find a file to read */
 			for (i = 0 ; i < nfiles; i++)
