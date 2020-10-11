@@ -1,8 +1,6 @@
 #include	"unp.h"
 
-void
-str_cli(FILE *fp, int sockfd)
-{
+void str_cli(FILE *fp, int sockfd) {
 	int			maxfdp1, stdineof;
 	fd_set		rset;
 	char		buf[MAXLINE];

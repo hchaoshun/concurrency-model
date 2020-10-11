@@ -1,9 +1,7 @@
 /* include fig01 */
 #include	"unp.h"
 
-int
-main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 	int					i, maxi, maxfd, listenfd, connfd, sockfd;
 	int					nready, client[FD_SETSIZE];
 	ssize_t				n;
@@ -29,21 +27,21 @@ main(int argc, char **argv)
 		client[i] = -1;			/* -1 indicates available entry */
 	FD_ZERO(&allset);
 	FD_SET(listenfd, &allset);
-/* end fig01 */
 
-/* include fig02 */
 	for ( ; ; ) {
+	    //select 每次调用都要重制此参数
 		rset = allset;		/* structure assignment */
 		nready = Select(maxfd+1, &rset, NULL, NULL, NULL);
 
 		if (FD_ISSET(listenfd, &rset)) {	/* new client connection */
 			clilen = sizeof(cliaddr);
 			connfd = Accept(listenfd, (SA *) &cliaddr, &clilen);
-#ifdef	NOTDEF
+
+            #ifdef	NOTDEF
 			printf("new client: %s, port %d\n",
 					Inet_ntop(AF_INET, &cliaddr.sin_addr, 4, NULL),
 					ntohs(cliaddr.sin_port));
-#endif
+            #endif
 
 			for (i = 0; i < FD_SETSIZE; i++)
 				if (client[i] < 0) {

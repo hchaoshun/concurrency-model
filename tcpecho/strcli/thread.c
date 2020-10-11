@@ -5,8 +5,7 @@ void	*copyto(void *);
 static int	sockfd;		/* global for both threads to access */
 static FILE	*fp;
 
-void
-str_cli(FILE *fp_arg, int sockfd_arg)
+void str_cli(FILE *fp_arg, int sockfd_arg)
 {
 	char		recvline[MAXLINE];
 	pthread_t	tid;
@@ -20,8 +19,7 @@ str_cli(FILE *fp_arg, int sockfd_arg)
 		Fputs(recvline, stdout);
 }
 
-void *
-copyto(void *arg)
+void * copyto(void *arg)
 {
 	char	sendline[MAXLINE];
 

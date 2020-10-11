@@ -2,9 +2,7 @@
 #include	"unp.h"
 #include	<limits.h>		/* for OPEN_MAX */
 
-int
-main(int argc, char **argv)
-{
+int main(int argc, char **argv){
 	int					i, maxi, listenfd, connfd, sockfd;
 	int					nready;
 	ssize_t				n;
@@ -29,18 +27,14 @@ main(int argc, char **argv)
 	for (i = 1; i < OPEN_MAX; i++)
 		client[i].fd = -1;		/* -1 indicates available entry */
 	maxi = 0;					/* max index into client[] array */
-/* end fig01 */
 
-/* include fig02 */
 	for ( ; ; ) {
+	    //poll调用不需要重置参数
 		nready = Poll(client, maxi+1, INFTIM);
 
 		if (client[0].revents & POLLRDNORM) {	/* new client connection */
 			clilen = sizeof(cliaddr);
 			connfd = Accept(listenfd, (SA *) &cliaddr, &clilen);
-#ifdef	NOTDEF
-			printf("new client: %s\n", Sock_ntop((SA *) &cliaddr, clilen));
-#endif
 
 			for (i = 1; i < OPEN_MAX; i++)
 				if (client[i].fd < 0) {
@@ -64,19 +58,13 @@ main(int argc, char **argv)
 			if (client[i].revents & (POLLRDNORM | POLLERR)) {
 				if ( (n = read(sockfd, buf, MAXLINE)) < 0) {
 					if (errno == ECONNRESET) {
-							/*4connection reset by client */
-#ifdef	NOTDEF
-						printf("client[%d] aborted connection\n", i);
-#endif
+                        /*4connection reset by client */
 						Close(sockfd);
 						client[i].fd = -1;
 					} else
 						err_sys("read error");
 				} else if (n == 0) {
-						/*4connection closed by client */
-#ifdef	NOTDEF
-					printf("client[%d] closed connection\n", i);
-#endif
+                    /*4connection closed by client */
 					Close(sockfd);
 					client[i].fd = -1;
 				} else

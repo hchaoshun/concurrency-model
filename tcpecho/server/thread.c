@@ -2,9 +2,7 @@
 
 static void	*doit(void *);		/* each thread executes this function */
 
-int
-main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
   int				listenfd, *iptr;
   thread_t		tid;
   socklen_t		addrlen, len;
@@ -27,9 +25,7 @@ main(int argc, char **argv)
   }
 }
 
-static void *
-doit(void *arg)
-{
+static void * doit(void *arg) {
   int		connfd;
 
   connfd = *((int *) arg);
